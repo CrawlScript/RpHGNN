@@ -1,11 +1,13 @@
 # RpHGNN
-Source code and dataset of the paper "Source code and dataset of the paper [Efficient Heterogeneous Graph Learning via Random Projection](#)
+Source code and dataset of the paper "Source code and dataset of the paper [Efficient Heterogeneous Graph Learning via Random Projection](https://arxiv.org/abs/2310.14481)
 
 
 
 ## Homepage and Paper
 
-+ Homepage (MGDCF): [https://github.com/CrawlScript/RpHGNN](https://github.com/CrawlScript/RpHGNN)
++ Homepage (RpHGNN): [https://github.com/CrawlScript/RpHGNN](https://github.com/CrawlScript/RpHGNN)
++ Paper: [Efficient Heterogeneous Graph Learning via Random Projection ](https://arxiv.org/abs/2310.14481) 
+
 
 
 
@@ -69,5 +71,20 @@ sh scripts/run_OAG-L1-Field.sh
 
 
 
+
+## Cite
+
+If you use MGDCF in a scientific publication, we would appreciate citations to the following paper:
+
+```
+@misc{hu2023efficient,
+      title={Efficient Heterogeneous Graph Learning via Random Projection}, 
+      author={Jun Hu and Bryan Hooi and Bingsheng He},
+      year={2023},
+      eprint={2310.14481},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+```
 
 
