@@ -70,6 +70,25 @@ sh scripts/run_OAG-L1-Field.sh
 ```
 
 
+## Run RpHGNN for OGB Leaderboards (ogbn-mag)
+
+To reproduce the results on the OGB Leaderboards (ogbn-mag), follow the steps below:
+
+- Preparing Pre-trained Embeddings (Optional):
+    - If the cache/mag.p file does not exist (embeddings pre-trained via LINE), our code will automatically pre-train it and save the pre-trained embeddings in the specified path.
+    - Alternatively, if you'd prefer to skip the pre-training step, download the pre-trained embeddings mag.p directly from [Google Drive](https://drive.google.com/file/d/1Q7gD1xpmLeFJu5xWWY3nwa46cM8xYClH/view?usp=sharing) and place it in the cache directory.
+
+
+- Execute the script:
+
+    ```shell
+    sh scripts/run_leaderboard_OGBN-MAG.sh
+    ```
+    
+    This script will run the training and evaluation using random seeds from 0 to 9. The output for seed i will be saved in the file nohup_leaderboard_mag_i.out.
+
+ 
+
 
 
 ## Cite

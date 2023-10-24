@@ -108,14 +108,24 @@ target_h_dtype = torch.float16
 
 timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
+running_leaderboard_mag = dataset == "mag" and use_label
+
 # hyper-parameters for ogbn-mag learderboard (lp+cl)
-if dataset == "mag" and use_label:
+if running_leaderboard_mag:
     scheduler_gamma = 0.99
+    num_views = 3
+    cl_rate = 0.6
+    model_save_dir = "saved_models"
+    if not os.path.exists(model_save_dir):
+        os.makedirs(model_save_dir)
+    model_save_path = os.path.join(model_save_dir, "leaderboard_mag_seed_{}.pt".format(seed))
 else:
     scheduler_gamma = None
+    num_views = 1
+    cl_rate = None
+    model_save_path = None
 
-num_views = 3
-cl_rate = 0.6
+
 
 
 
@@ -313,6 +323,8 @@ model = RpHGNNEncoder(
 
     ).to(device)
 
+print("number of params:", sum(p.numel() for p in model.parameters()))
+asdfasdf
 logging_callback = LoggingCallback(tmp_output_fpath, {"pre_compute_time": pre_compute_time})
 tensor_board_callback = TensorBoardCallback(
     "logs/{}/{}".format(dataset, timestamp)
@@ -379,20 +391,49 @@ def train_and_eval():
 
     print("early_stop_metric_names = {}".format(early_stop_metric_names))
 
-    early_stopping_callback = EarlyStoppingCallback(early_stop_strategy, early_stop_metric_names, validation_freq, patience, test_data_loader)
+    early_stopping_callback = EarlyStoppingCallback(
+        early_stop_strategy, early_stop_metric_names, validation_freq, patience, test_data_loader,
+        model_save_path=model_save_path
+    )
    
 
     model.fit(
         train_data=train_data_loader,
         epochs=num_epochs,
-    
         validation_data=valid_data_loader,
         validation_freq=validation_freq,
         callbacks=[early_stopping_callback, logging_callback, tensor_board_callback],
     )
 
 
+    # For ogbn-mag leaderboard, we also evaluate it via OGB's official evaluator
+    if running_leaderboard_mag:
+        from ogb.nodeproppred import Evaluator
+        evaluator = Evaluator("ogbn-mag")
+
+        print("loading saved model ...")
+        model.load_state_dict(torch.load(model_save_path))
+        model.eval()
+        
+        
+        with torch.no_grad():
+            valid_y_pred = model.predict(valid_data_loader).argmax(dim=-1, keepdim=True)
+            test_y_pred = model.predict(test_data_loader).argmax(dim=-1, keepdim=True)
+            ogb_valid_acc = evaluator.eval({
+                'y_true': torch_y[valid_index].unsqueeze(-1),
+                'y_pred': valid_y_pred
+            })['acc']
+            ogb_test_acc = evaluator.eval({
+                'y_true': torch_y[test_index].unsqueeze(-1),
+                'y_pred': test_y_pred
+            })['acc']
+
+        print("Results of OGB Evaluator: valid_acc = {}, test_acc = {}".format(ogb_valid_acc, ogb_test_acc))
+
 train_and_eval()
 
 shutil.move(tmp_output_fpath, output_fpath)
 print("move tmp file {} => {}".format(tmp_output_fpath, output_fpath))
+
+
+

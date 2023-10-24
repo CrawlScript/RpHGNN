@@ -2,6 +2,10 @@
 /downloads/
 /outputs/
 /logs/
+/cache/
+/saved_models/
+*.p
+*.pt
 *.out
 
 # Byte-compiled / optimized / DLL files
