@@ -324,7 +324,6 @@ model = RpHGNNEncoder(
     ).to(device)
 
 print("number of params:", sum(p.numel() for p in model.parameters()))
-asdfasdf
 logging_callback = LoggingCallback(tmp_output_fpath, {"pre_compute_time": pre_compute_time})
 tensor_board_callback = TensorBoardCallback(
     "logs/{}/{}".format(dataset, timestamp)
