@@ -75,7 +75,7 @@ sh scripts/run_OAG-L1-Field.sh
 To reproduce the results on the OGB Leaderboards (ogbn-mag), follow the steps below:
 
 - Preparing Pre-trained Embeddings (Optional):
-    - If the cache/mag.p file does not exist (embeddings pre-trained via LINE), our code will automatically pre-train it and save the pre-trained embeddings in the specified path.
+    - If the cache/mag.p file does not exist (embeddings pre-trained via LINE [1]), our code will automatically pre-train it and save the pre-trained embeddings in the specified path.
     - Alternatively, if you'd prefer to skip the pre-training step, download the pre-trained embeddings mag.p directly from [Google Drive](https://drive.google.com/file/d/1Q7gD1xpmLeFJu5xWWY3nwa46cM8xYClH/view?usp=sharing) and place it in the `cache` directory.
 
 
@@ -87,7 +87,9 @@ To reproduce the results on the OGB Leaderboards (ogbn-mag), follow the steps be
     
     This script will run the training and evaluation using random seeds from 0 to 9. The output for seed i will be saved in the file nohup_leaderboard_mag_i.out.
 
- 
+
+References:
+- [1] Jian Tang, Meng Qu, Mingzhe Wang, Ming Zhang, Jun Yan, and Qiaozhu Mei. "Line: Large-scale information network embedding." In Proceedings of the 24th international conference on world wide web, pp. 1067-1077. 2015.
 
 
 
