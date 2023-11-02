@@ -52,7 +52,7 @@ After generating *.pk and *.npy files, you should:
 
 ## Run RpHGNN
 
-You can run MGDCF with the following command:
+You can run RpHGNN with the following command:
 ```shell
 sh scripts/run_ACM.sh
 
@@ -95,7 +95,7 @@ References:
 
 ## Cite
 
-If you use MGDCF in a scientific publication, we would appreciate citations to the following paper:
+If you use RpHGNN in a scientific publication, we would appreciate citations to the following paper:
 
 ```
 @misc{hu2023efficient,
