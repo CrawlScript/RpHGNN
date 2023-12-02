@@ -109,3 +109,10 @@ If you use RpHGNN in a scientific publication, we would appreciate citations to 
 ```
 
 
+
+
+
+__License:__ [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)
+
+Copyright (c) 2023-2024 Xtra Computing Group, NUS, Singapore.
+
