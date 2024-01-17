@@ -1,5 +1,5 @@
 # RpHGNN
-Source code and dataset of the paper "Source code and dataset of the paper [Efficient Heterogeneous Graph Learning via Random Projection](https://arxiv.org/abs/2310.14481)
+Source code and dataset of the paper "[Efficient Heterogeneous Graph Learning via Random Projection](https://arxiv.org/abs/2310.14481)"
 
 
 
