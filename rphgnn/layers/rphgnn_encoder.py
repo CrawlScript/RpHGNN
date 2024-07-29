@@ -62,6 +62,22 @@ class MyConv1d(nn.Conv1d):
         nn.init.zeros_(self.bias)
 
 
+class MyMLPConv1d(nn.Module):
+    """
+    another implementation of MLPConv1d
+    """
+    def __init__(self, in_channels, out_channels):
+        super().__init__()
+        self.linear = MyLinear(in_channels, out_channels)
+
+    def forward(self, x):
+        h = torch.permute(x, (0, 2, 1))
+        h = self.linear(h)
+        h = torch.permute(h, (0, 2, 1))
+        h = h.contiguous()
+        return h
+
+
 class MLP(nn.Module):
 
     def __init__(self,
@@ -138,6 +154,8 @@ class GroupEncoders(nn.Module):
         self.group_encoders = nn.ModuleList([
             nn.Sequential(
                 MyConv1d(group_size, real_filters, 1, stride=1),
+                # # if too slow, comment MyConv1d (above) and uncomment MyMLPConv1d (below)
+                # MyMLPConv1d(group_size, real_filters),
                 Lambda(lambda x: x.view(x.size(0), -1))
             )
             for _, (group_size, real_filters) in enumerate(zip(self.group_sizes, self.real_filters_list))
