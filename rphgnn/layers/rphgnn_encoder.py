@@ -9,7 +9,7 @@ from rphgnn.layers.torch_train_model import CommonTorchTrainModel
 
 
 
-class MyPReLU(nn.Module):
+class PReLU(nn.Module):
 
     __constants__ = ['num_parameters']
     num_parameters: int
@@ -40,7 +40,14 @@ class Lambda(nn.Module):
         return self.func(x)
         
 def create_act(name=None):
-    if name == "softmax":
+
+    if name is None:
+        return nn.Identity()
+    elif name == "relu":
+        return nn.ReLU()
+    elif name == "prelu":
+        return PReLU()
+    elif name == "softmax":
         return nn.Softmax(dim=-1)
     elif name == "sigmoid":
         return nn.Sigmoid()
@@ -50,25 +57,25 @@ def create_act(name=None):
         raise Exception()
 
 
-class MyLinear(nn.Linear):
+class Linear(nn.Linear):
     def reset_parameters(self) -> None:
         nn.init.xavier_normal_(self.weight)
         nn.init.zeros_(self.bias)
 
 
-class MyConv1d(nn.Conv1d):
+class Conv1d(nn.Conv1d):
     def reset_parameters(self) -> None:
         nn.init.xavier_normal_(self.weight)
         nn.init.zeros_(self.bias)
 
 
-class MyMLPConv1d(nn.Module):
+class MLPConv1d(nn.Module):
     """
-    another implementation of MLPConv1d
+    another implementation of Conv1d
     """
     def __init__(self, in_channels, out_channels):
         super().__init__()
-        self.linear = MyLinear(in_channels, out_channels)
+        self.linear = Linear(in_channels, out_channels)
 
     def forward(self, x):
         h = torch.permute(x, (0, 2, 1))
@@ -81,54 +88,39 @@ class MyMLPConv1d(nn.Module):
 class MLP(nn.Module):
 
     def __init__(self,
-                 units_list,
-                 drop_rate,
-                 input_shape,
-                 kernel_regularizer=None,
+                 channels_list,
+                 drop_rate=0.0,
                  activation=None,
+                 output_drop_rate=0.0,
+                 output_activation=None,
+                 input_shape=None,
+                 kernel_regularizer=None,
                  *args, **kwargs):
+
         super().__init__(*args, **kwargs)
 
-        self.encoder_fc = None
-        self.decoder_fc = None
-
-        self.drop_rate = drop_rate
         self.kernel_regularizer = kernel_regularizer
-        self.relation_encoders = None
 
-        self.activation = activation
+        in_channels = input_shape[-1]
+        channels_list = [in_channels] + channels_list
+
+        layers = [] 
+        for i in range(len(channels_list) - 1):
+            layers.append(Linear(channels_list[i], channels_list[i + 1]))
+            if i < len(channels_list) - 2:
+                layers.append(create_act(activation))
+                layers.append(nn.Dropout(drop_rate))
+            else:
+                layers.append(create_act(output_activation))
+                layers.append(nn.Dropout(output_drop_rate))
 
 
-        input_units = input_shape[-1]
+        self.layers = nn.Sequential(*layers)
 
-        units_list = [input_units] + units_list
-        
-        self.encoder_fc = nn.Sequential(
-                *(list(chain(*
-
-                            [[MyLinear(units_list[i], units_list[i + 1]),
-                                 MyPReLU(),
-                                 nn.Dropout(drop_rate)]
-                                 for i, _ in enumerate(units_list[:-2])]
-                            ))
-                +
-                ([
-                    MyLinear(units_list[-2], units_list[-1]),
-                    MyPReLU(),
-                    nn.Dropout(drop_rate)
-                ] if self.activation is None else 
-                [
-                    MyLinear(units_list[-2], units_list[-1]),
-                    create_act(activation)
-                ]) 
-                
-                )
-
-        )
 
 
     def forward(self, x):
-        return self.encoder_fc(x)
+        return self.layers(x)
 
 
 
@@ -153,7 +145,7 @@ class GroupEncoders(nn.Module):
 
         self.group_encoders = nn.ModuleList([
             nn.Sequential(
-                MyConv1d(group_size, real_filters, 1, stride=1),
+                Conv1d(group_size, real_filters, 1, stride=1),
                 # # if too slow, comment MyConv1d (above) and uncomment MyMLPConv1d (below)
                 # MyMLPConv1d(group_size, real_filters),
                 Lambda(lambda x: x.view(x.size(0), -1))
@@ -188,11 +180,12 @@ class GroupEncoders(nn.Module):
 class MultiGroupFusion(nn.Module):
 
     def __init__(self,
-                 group_units_list,
-                 global_units_list,
+                 group_channels_list,
+                 global_channels_list,
                  merge_mode,
                  drop_rate,
-                 activation=None,
+                 activation="prelu",
+                 output_activation=None,
                  input_shape=None,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -200,12 +193,10 @@ class MultiGroupFusion(nn.Module):
         self.group_fc_list = None
         self.global_fc = None
 
-        self.group_units_list = group_units_list
-        self.global_units_list = global_units_list
+        self.group_channels_list = group_channels_list
+        self.global_channels_list = global_channels_list
         self.merge_mode = merge_mode
         self.drop_rate = drop_rate
-
-        self.activation = activation
 
         self.use_shared_group_fc = False
         self.group_encoder_mode = "common" 
@@ -214,18 +205,30 @@ class MultiGroupFusion(nn.Module):
         self.num_groups = num_groups
 
         self.group_fc_list = nn.ModuleList([
-            MLP(group_units_list, drop_rate, input_shape=group_input_shape)
+            MLP(
+                group_channels_list, 
+                drop_rate=drop_rate,
+                activation=activation,
+                output_drop_rate=drop_rate,
+                output_activation=activation,
+                input_shape=group_input_shape
+            )
             for group_input_shape in input_shape
         ])
 
         if merge_mode in ["mean", "free"]:
-            global_input_shape = [-1, group_units_list[-1]]
+            global_input_shape = [-1, group_channels_list[-1]]
         elif merge_mode == "concat":
-            global_input_shape = [-1, group_units_list[-1] * num_groups]
+            global_input_shape = [-1, group_channels_list[-1] * num_groups]
         else:
             raise Exception("wrong merge mode: ", merge_mode)
 
-        self.global_fc = MLP(self.global_units_list, drop_rate=self.drop_rate, activation=self.activation, input_shape=global_input_shape)
+        self.global_fc = MLP(self.global_channels_list, 
+                             drop_rate=self.drop_rate, 
+                             activation=activation,
+                             output_drop_rate=0.0,
+                             output_activation=output_activation,
+                             input_shape=global_input_shape)
 
 
     def forward(self, inputs):
@@ -250,14 +253,15 @@ class RpHGNNEncoder(CommonTorchTrainModel):
 
     def __init__(self,
                  filters_list,
-                 group_units_list,
-                 global_units_list,
+                 group_channels_list,
+                 global_channels_list,
                  merge_mode,
                  input_shape,
                  *args,
                  input_drop_rate=0.0,
                  drop_rate=0.0,
-                 activation=None,
+                 activation="prelu",
+                 output_activation=None,
                  **kwargs):
         
         super().__init__(*args, **kwargs)
@@ -270,7 +274,12 @@ class RpHGNNEncoder(CommonTorchTrainModel):
 
         multi_group_fusion_input_shape = [[-1, group_input_shape[-1] * filters] 
                                           for group_input_shape, filters in zip(group_encoders_input_shape, self.group_encoders.real_filters_list)]
-        self.multi_group_fusion = MultiGroupFusion(group_units_list, global_units_list, merge_mode, drop_rate, activation=activation, input_shape=multi_group_fusion_input_shape)
+        self.multi_group_fusion = MultiGroupFusion(
+            group_channels_list, global_channels_list, merge_mode, 
+            drop_rate, 
+            activation=activation, 
+            output_activation=output_activation,
+            input_shape=multi_group_fusion_input_shape)
 
     def forward(self, inputs):
 

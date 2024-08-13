@@ -165,7 +165,7 @@ time_dict = {
 }
 
 squash_k, inner_k, conv_filters, num_layers_list, hidden_size, merge_mode, input_drop_rate, drop_rate, \
-        use_pretrain_features, random_projection_align, input_random_projection_units, target_feat_random_project_size, add_self_group = load_default_param_config(dataset)
+        use_pretrain_features, random_projection_align, input_random_projection_size, target_feat_random_project_size, add_self_group = load_default_param_config(dataset)
 
 
 embedding_size = None
@@ -310,8 +310,8 @@ model = RpHGNNEncoder(
     input_shape=nested_map(target_h_list_list, lambda x: list(x.size())),
     input_drop_rate=input_drop_rate,
     drop_rate=drop_rate,
-    activation="identity",
-
+    activation="prelu",
+    output_activation="identity",
     metrics_dict=metrics_dict,
     multi_label=multi_label, 
     loss_func=kl_loss if dataset == "oag_L1" else None,
@@ -322,6 +322,8 @@ model = RpHGNNEncoder(
     cl_rate=cl_rate
 
     ).to(device)
+
+print(model)
 
 print("number of params:", sum(p.numel() for p in model.parameters()))
 logging_callback = LoggingCallback(tmp_output_fpath, {"pre_compute_time": pre_compute_time})

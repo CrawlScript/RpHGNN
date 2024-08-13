@@ -5,7 +5,7 @@ def load_default_param_config(dataset):
     use_pretrain_features = False
 
     random_projection_align = False
-    input_random_projection_units = None
+    input_random_projection_size = None
 
     merge_mode = "concat"
     target_feat_random_project_size = None
@@ -80,7 +80,7 @@ def load_default_param_config(dataset):
         input_drop_rate = 0.8
         drop_rate = 0.7
 
-        input_random_projection_units = None
+        input_random_projection_size = None
 
 
         hidden_size = 256
@@ -101,7 +101,7 @@ def load_default_param_config(dataset):
         input_drop_rate = 0.7
         drop_rate = 0.7
 
-        input_random_projection_units = None
+        input_random_projection_size = None
         
         hidden_size = 64
         
@@ -134,7 +134,7 @@ def load_default_param_config(dataset):
         
 
     return squash_k, inner_k, conv_filters, num_layers_list, hidden_size, merge_mode, input_drop_rate, drop_rate, \
-           use_pretrain_features, random_projection_align, input_random_projection_units, target_feat_random_project_size, add_self_group
+           use_pretrain_features, random_projection_align, input_random_projection_size, target_feat_random_project_size, add_self_group
 
 
 
