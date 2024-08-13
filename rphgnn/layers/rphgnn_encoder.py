@@ -89,11 +89,11 @@ class MLP(nn.Module):
 
     def __init__(self,
                  channels_list,
+                 input_shape,
                  drop_rate=0.0,
                  activation=None,
                  output_drop_rate=0.0,
                  output_activation=None,
-                 input_shape=None,
                  kernel_regularizer=None,
                  *args, **kwargs):
 
@@ -183,10 +183,10 @@ class MultiGroupFusion(nn.Module):
                  group_channels_list,
                  global_channels_list,
                  merge_mode,
-                 drop_rate,
+                 input_shape,
+                 drop_rate=0.0,
                  activation="prelu",
                  output_activation=None,
-                 input_shape=None,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -207,11 +207,11 @@ class MultiGroupFusion(nn.Module):
         self.group_fc_list = nn.ModuleList([
             MLP(
                 group_channels_list, 
+                input_shape=group_input_shape,
                 drop_rate=drop_rate,
                 activation=activation,
                 output_drop_rate=drop_rate,
-                output_activation=activation,
-                input_shape=group_input_shape
+                output_activation=activation
             )
             for group_input_shape in input_shape
         ])
@@ -224,11 +224,11 @@ class MultiGroupFusion(nn.Module):
             raise Exception("wrong merge mode: ", merge_mode)
 
         self.global_fc = MLP(self.global_channels_list, 
+                             input_shape=global_input_shape,
                              drop_rate=self.drop_rate, 
                              activation=activation,
                              output_drop_rate=0.0,
-                             output_activation=output_activation,
-                             input_shape=global_input_shape)
+                             output_activation=output_activation)
 
 
     def forward(self, inputs):
@@ -275,11 +275,12 @@ class RpHGNNEncoder(CommonTorchTrainModel):
         multi_group_fusion_input_shape = [[-1, group_input_shape[-1] * filters] 
                                           for group_input_shape, filters in zip(group_encoders_input_shape, self.group_encoders.real_filters_list)]
         self.multi_group_fusion = MultiGroupFusion(
-            group_channels_list, global_channels_list, merge_mode, 
-            drop_rate, 
+            group_channels_list, global_channels_list, 
+            merge_mode, 
+            input_shape=multi_group_fusion_input_shape,
+            drop_rate=drop_rate,
             activation=activation, 
-            output_activation=output_activation,
-            input_shape=multi_group_fusion_input_shape)
+            output_activation=output_activation)
 
     def forward(self, inputs):
 
