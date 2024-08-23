@@ -6,7 +6,7 @@ import numpy as np
 import time
 
 
-class CallBack(object):
+class Callback(object):
     def __init__(self) -> None:
         self.model = None
 
@@ -23,7 +23,7 @@ class CallBack(object):
 
 
 
-class EarlyStoppingCallback(CallBack):
+class EarlyStoppingCallback(Callback):
 
     def __init__(self, strategy, metric_names, validation_freq, patience, test_data,
                  model_save_path=None,
@@ -158,7 +158,7 @@ class NumpyFloatValuesEncoder(json.JSONEncoder):
 
 
 
-class LoggingCallback(CallBack):
+class LoggingCallback(Callback):
 
     def __init__(self, log_path, extra_logs=None):
         super().__init__()
@@ -218,7 +218,7 @@ from tensorboardX import SummaryWriter
 
 
 
-class TensorBoardCallback(CallBack):
+class TensorBoardCallback(Callback):
 
     def __init__(self,  log_dir='logs'):
         super().__init__()
