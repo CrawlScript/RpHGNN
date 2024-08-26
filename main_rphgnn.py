@@ -250,7 +250,7 @@ def create_label_target_h_list_list():
     train_label_feat[train_index] = F.one_hot(torch.tensor(y[train_index]), num_classes).float()
         
     label_target_h_list_list = rphgnn_propagate_and_collect_label(hetero_graph, target_node_type, y, train_label_feat)
-    label_target_h_list_list = nested_map(label_target_h_list_list, lambda x: torch.tensor(x, dtype=target_h_dtype).to(pre_device))
+    label_target_h_list_list = nested_map(label_target_h_list_list, lambda x: x.to(target_h_dtype).to(pre_device))
     return label_target_h_list_list
 
 if use_label:   
@@ -276,7 +276,7 @@ feat_target_h_list_list, target_sorted_keys = rphgnn_propagate_and_collect(heter
                         add_self_group=add_self_group
                         )  
 
-feat_target_h_list_list = nested_map(feat_target_h_list_list, lambda x: torch.tensor(x, dtype=target_h_dtype).to(pre_device))
+feat_target_h_list_list = nested_map(feat_target_h_list_list, lambda x: x.to(target_h_dtype).to(pre_device))
 target_h_list_list = feat_target_h_list_list + label_target_h_list_list
 
 

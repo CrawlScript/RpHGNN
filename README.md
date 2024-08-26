@@ -1,12 +1,23 @@
 # RpHGNN
-Source code and dataset of the paper "[Efficient Heterogeneous Graph Learning via Random Projection](https://arxiv.org/abs/2310.14481)"
+Source code and dataset of the paper "[Efficient Heterogeneous Graph Learning via Random Projection](https://arxiv.org/abs/2310.14481)", which is accepted by IEEE Transactions on Knowledge and Data Engineering (TKDE 2024).
 
 
 
 ## Homepage and Paper
 
 + Homepage (RpHGNN): [https://github.com/CrawlScript/RpHGNN](https://github.com/CrawlScript/RpHGNN)
-+ Paper: [Efficient Heterogeneous Graph Learning via Random Projection ](https://arxiv.org/abs/2310.14481) 
++ Paper Access:
+    - **IEEE Xplore**: [https://ieeexplore.ieee.org/document/10643347](https://ieeexplore.ieee.org/document/10643347)
+    - **ArXiv**: [https://arxiv.org/abs/2310.14481](https://arxiv.org/abs/2310.14481)
+
+
+## Implementations and Paper Links
+
++ PyTorch Implementation: [Torch-MGDCF](https://github.com/CrawlScript/Torch-MGDCF)
++ TensorFlow Implementation: [TensorFlow-MGDCF](https://github.com/hujunxianligong/MGDCF)
++ Paper Access:
+    - **IEEE Xplore**: [https://ieeexplore.ieee.org/document/10384729](https://ieeexplore.ieee.org/document/10384729)
+    - **ArXiv**: [https://arxiv.org/abs/2204.02338](https://arxiv.org/abs/2204.02338)
 
 
 
@@ -98,14 +109,15 @@ References:
 If you use RpHGNN in a scientific publication, we would appreciate citations to the following paper:
 
 ```
-@misc{hu2023efficient,
-      title={Efficient Heterogeneous Graph Learning via Random Projection}, 
-      author={Jun Hu and Bryan Hooi and Bingsheng He},
-      year={2023},
-      eprint={2310.14481},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
-}
+@ARTICLE{10643347,
+  author={Hu, Jun and Hooi, Bryan and He, Bingsheng},
+  journal={IEEE Transactions on Knowledge and Data Engineering}, 
+  title={Efficient Heterogeneous Graph Learning via Random Projection}, 
+  year={2024},
+  volume={},
+  number={},
+  pages={1-14},
+  doi={10.1109/TKDE.2024.3434956}}
 ```
 
 

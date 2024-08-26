@@ -20,6 +20,7 @@ mkdir cache
 
 for SEED in $(seq 0 9)
 do
+SEED=11
 echo $SEED
 python -u main_rphgnn.py \
     --dataset ${DATASET} \

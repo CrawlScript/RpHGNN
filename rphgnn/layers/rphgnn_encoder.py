@@ -147,7 +147,7 @@ class GroupEncoders(nn.Module):
             nn.Sequential(
                 Conv1d(group_size, real_filters, 1, stride=1),
                 # # if too slow, comment MyConv1d (above) and uncomment MyMLPConv1d (below)
-                # MyMLPConv1d(group_size, real_filters),
+                # MLPConv1d(group_size, real_filters),
                 Lambda(lambda x: x.view(x.size(0), -1))
             )
             for _, (group_size, real_filters) in enumerate(zip(self.group_sizes, self.real_filters_list))

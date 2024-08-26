@@ -149,7 +149,7 @@ def rphgnn_propagate_then_update(g, current_k, inner_k, input_x_dim_dict, target
             if ntype == target_node_type:
                 # print("collect outputs for {}".format(ntype))
 
-                target_h_list_list = [[h.detach().cpu().numpy() for h in hop_h_list] 
+                target_h_list_list = [[h.detach().cpu() for h in hop_h_list] 
                                         for hop_h_list in even_odd_iter_h_list_list]
                 target_sorted_keys = even_odd_iter_sorted_keys
 
@@ -377,7 +377,7 @@ def rphgnn_propagate_and_collect(g, k, inner_k, alpha, target_node_type, use_inp
 
                     print("add input x to {}".format(key))
                     x = input_target_x
-                    x = x.detach().cpu().numpy()
+                    x = x.detach().cpu()
 
                     target_h_list.insert(0, x)
 
@@ -388,11 +388,12 @@ def rphgnn_propagate_and_collect(g, k, inner_k, alpha, target_node_type, use_inp
         #         print(target_h.shape)
 
     if add_self_group:
-        target_h_list_list.append([raw_input_target_x.detach().cpu().numpy()])
+        target_h_list_list.append([raw_input_target_x.detach().cpu()])
         target_sorted_keys.append(("self",))
 
     print("target_sorted_keys: ", target_sorted_keys)
-    target_h_list_list = [np.stack(target_h_list, axis=1) for target_h_list in target_h_list_list]
+    target_h_list_list = [torch.stack(target_h_list, dim=1) for target_h_list in target_h_list_list]
+
     return target_h_list_list, target_sorted_keys
 
 
