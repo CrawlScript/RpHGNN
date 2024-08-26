@@ -11,15 +11,6 @@ Source code and dataset of the paper "[Efficient Heterogeneous Graph Learning vi
     - **ArXiv**: [https://arxiv.org/abs/2310.14481](https://arxiv.org/abs/2310.14481)
 
 
-## Implementations and Paper Links
-
-+ PyTorch Implementation: [Torch-MGDCF](https://github.com/CrawlScript/Torch-MGDCF)
-+ TensorFlow Implementation: [TensorFlow-MGDCF](https://github.com/hujunxianligong/MGDCF)
-+ Paper Access:
-    - **IEEE Xplore**: [https://ieeexplore.ieee.org/document/10384729](https://ieeexplore.ieee.org/document/10384729)
-    - **ArXiv**: [https://arxiv.org/abs/2204.02338](https://arxiv.org/abs/2204.02338)
-
-
 
 
 ## Requirements
