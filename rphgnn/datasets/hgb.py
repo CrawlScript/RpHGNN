@@ -213,7 +213,7 @@ class data_loader:
         if not os.path.exists(dirs):
             os.makedirs(dirs)
         file_name = str(int(time.time()))
-        with open(os.path.join(dirs, file_name), "w") as f:
+        with open(os.path.join(dirs, file_name), "w", encoding="utf-8") as f:
             for nid, l in zip(test_idx, label):
                 f.write(f"{nid}\t\t{self.get_node_type(nid)}\t{l}\n")
 
